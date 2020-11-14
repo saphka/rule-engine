@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: Rule Engige
+  description: |
+                Rule Engige API allows the user to define context structure and rules.
+                After that rules can be applied to a given context object and evaluated
+  version: 1.0.0
+servers:
+  - url: 'http://localhost/rule-engine'
+paths:
+  /contexts:
+    get:
+      description: Get list of context objects defined in the system
+      parameters:
+        - name: size
+          description: A page size to return
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 0
+        - name: page
+          description: A page number to return
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+      responses:
+        200:
+          description: A list of context objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContextObject'
+
+components:
+  schemas:
+    ContextObjectFieldType:
+      description: Field type
+      type: enum
+      enum:
+        - STRING
+        - DATETIME
+        - INTEGER
+        - FLOAT
+    ContextObjectName:
+      type: string
+      minLength: 1
+      maxLength: 512
+    ContextObjectField:
+      description: A context object field
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ContextObjectName'
+        type:
+          $ref: '#/components/schemas/ContextObjectFieldType'
+    ContextObjectRelationType:
+      description: A relation type between context objects
+      type: enum
+      enum:
+        - ONE_TO_ONE
+        - ONE_TO_MANY
+    ContextObject:
+      description: A context object
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ContextObjectName'
+        fields:
+          description: A list of fields
+          type: array
+          items:
+            $ref: '#/components/schemas/ContextObjectField'
+        relations:
+          description: A list of related objects
+          type: object
+          properties:
+            type:
+              $ref: '#/components/schemas/ContextObjectRelationType'
+            name:
+              $ref: '#/components/schemas/ContextObjectName'
